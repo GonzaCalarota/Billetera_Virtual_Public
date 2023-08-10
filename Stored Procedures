@@ -1,0 +1,101 @@
+-- SP NUMERO 1
+USE BILLETERA_VIRTUAL
+DELIMITER $$
+
+CREATE PROCEDURE `SP_Ordenamiento` (IN Campo CHAR(20), IN Orden VARCHAR(4))
+BEGIN
+DECLARE Consulta VARCHAR(1000);
+
+-- Si el parametro Campo no esta vacio y se define el orden ascendente, se ordena por campo y ASC.
+IF Campo <> '' AND Orden = 'ASC' THEN 
+SET @Ordenamiento_CampoA = CONCAT(' ORDER BY ', Campo, ' ASC');
+ELSE
+SET @Ordenamiento_CampoA = '';
+END IF;
+
+-- Si el parametro Campo no esta vacio y se define el orden descendente, se ordena por campo y DESC.
+IF Campo <> '' AND Orden = 'DESC' THEN 
+SET @Ordenamiento_CampoB = CONCAT(' ORDER BY ', Campo, ' DESC'); 
+ELSE
+SET @Ordenamiento_CampoB = '';
+END IF;
+
+-- Concateno la variable declarada con la sentencia select, dentro de la tabla clientes e incorporo las variables seteadas con sus condiciones.
+SET @consulta = CONCAT('SELECT * FROM BILLETERA_VIRTUAL.Clientes', @Ordenamiento_CampoA, @Ordenamiento_CampoB);
+
+PREPARE SPUNO FROM @consulta;
+EXECUTE SPUNO;
+DEALLOCATE PREPARE SPUNO;
+
+END$$
+
+DELIMITER ;
+
+CALL SP_Ordenamiento('Nombre', 'DESC');
+
+-- SP NUMERO 2
+USE BILLETERA_VIRTUAL
+DELIMITER $$
+
+CREATE PROCEDURE SP_Consumo_Registrado (IN ID_Cliente_OP INT, IN Rubro_Gasto INT, IN Nuevo_Consumo DECIMAL(11,2))
+BEGIN
+
+DECLARE Total_Gastado DECIMAL(11, 2);
+DECLARE Nueva_Valoracion INT;
+
+-- Obtengo lo que gasto el cliente con anterioridad hasta el momento.
+SELECT SUM(Monto) INTO Total_Gastado  
+FROM Billetera_Virtual.Detalle_Debito
+WHERE id_cliente = id_cliente_op;
+-- Sumo el monto del nuevo consumo al total gastado.
+SET Total_Gastado = Total_Gastado + Nuevo_Consumo;
+-- Obtengo la nueva valoración según el total gastado y definiendo condiciones.
+IF Total_Gastado <= 1000 THEN
+SET Nueva_Valoracion = 1;
+ELSEIF Total_Gastado >= 1000.01 AND Total_Gastado <= 5000 THEN
+SET Nueva_Valoracion = 2;
+ELSEIF Total_Gastado >= 5001.01 AND Total_Gastado <= 10000 THEN
+SET Nueva_Valoracion = 3;
+ELSEIF Total_Gastado >= 10000.01 AND Total_Gastado <= 100000 THEN
+SET Nueva_Valoracion = 4;
+ELSEIF Total_Gastado >= 100000.01 THEN
+SET Nueva_Valoracion = 5;
+
+END IF;
+
+-- Actualizo la tabla de clientes con la nueva valoración respecto al total gastado.
+UPDATE Billetera_Virtual.Clientes
+SET Id_Valoracion = Nueva_Valoracion
+WHERE id_cliente = id_cliente_op;
+
+-- Inserto el nuevo consumo dentro de la tabla correspondiente.
+INSERT INTO Billetera_Virtual.Detalle_Debito (id_cliente, id_rubro, fecha_debito, monto)
+VALUES (ID_Cliente_OP, Rubro_Gasto, current_timestamp, Nuevo_Consumo);
+
+END$$
+
+DELIMITER ;
+
+call billetera_virtual.SP_Consumo_Registrado(2, 5, 430000);
+
+-- SP NUMERO 3
+USE BILLETERA_VIRTUAL
+DELIMITER $$
+
+CREATE PROCEDURE SP_Crear_Cliente (IN N_Nombre VARCHAR(50), IN N_Apellido VARCHAR(50), IN N_Fecha_de_Nacimiento DATE, IN N_Tipo_Documento VARCHAR(3), IN N_Documento VARCHAR(15))
+BEGIN
+-- Declaro y seteo la variable N_ID_Valoracion para que se llene por defecto con el valor 1.
+DECLARE N_ID_Valoracion INT;
+SET N_ID_Valoracion = 1;
+
+-- Inserto en la tabla correspondiente los valores requeridos.
+-- Se completan con los parametros de entrada y tambien con los seteados previamente.
+INSERT INTO Billetera_Virtual.Clientes (Id_Valoracion, Nombre, Apellido, Fecha_de_Nacimiento, Tipo_Documento, Documento, Fecha_Alta_Cliente)
+VALUES (N_ID_Valoracion, N_Nombre, N_Apellido, N_Fecha_de_Nacimiento, N_Tipo_Documento, N_Documento, current_date);
+
+END $$
+
+DELIMITER ;
+
+call billetera_virtual.SP_Crear_Cliente('Juan', 'Almada', '1991-06-20', 'DNI', '33333333');
+
