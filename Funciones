@@ -14,7 +14,7 @@ END$$
 
 DELIMITER ;
 
-SELECT Inclusion_Servicio_Coderhouse(35000, 12, 4500.50) AS Año_2024
+SELECT Inclusion_Servicio_Coderhouse_BV(35000, 12, 4500.50) AS Año_2024
 
 -- Ejemplo de aumento de proyeccion anual (objetivos) sobre la base de flujo economico del año 2023.
 
