@@ -1,0 +1,245 @@
+CREATE DATABASE BILLETERA_VIRTUAL;
+USE BILLETERA_VIRTUAL;
+
+CREATE TABLE Valoracion_Apertura (
+id_valoracion INT NOT NULL AUTO_INCREMENT,
+descripcion_valoracion VARCHAR (100) NOT NULL,
+monto_inicio_rango DECIMAL (11,2) NOT NULL,
+monto_fin_rango DECIMAL (11,2) NOT NULL,
+PRIMARY KEY (id_valoracion)
+);
+
+
+CREATE TABLE Compañia_Telefonia (
+id_compañia INT NOT NULL AUTO_INCREMENT,
+nombre_compañia VARCHAR(50) NOT NULL,
+PRIMARY KEY (id_compañia)
+);
+
+CREATE TABLE Codigo_Postal (
+id_codigo_postal INT NOT NULL AUTO_INCREMENT,
+codigo_postal VARCHAR (40) NOT NULL,
+localidad VARCHAR (50) NOT NULL,
+partido VARCHAR (40) NOT NULL,
+ciudad VARCHAR (40) NOT NULL,
+pais VARCHAR (30) NOT NULL,
+PRIMARY KEY (id_codigo_postal)
+);
+
+CREATE TABLE Emisora_cuenta (
+id_emisora_cuenta INT NOT NULL AUTO_INCREMENT,
+nombre_emisora VARCHAR (50) NOT NULL,
+PRIMARY KEY (id_emisora_cuenta)
+);
+
+CREATE TABLE Emisora_Promocion (
+id_emisora_promocion INT NOT NULL AUTO_INCREMENT,
+nombre_emisora_promo VARCHAR (50) NOT NULL,
+PRIMARY KEY (id_emisora_promocion)
+);
+
+CREATE TABLE Rubro (
+id_rubro INT NOT NULL AUTO_INCREMENT,
+nombre_rubro VARCHAR (50) NOT NULL,
+PRIMARY KEY (id_rubro)
+);
+
+CREATE TABLE Tipo_Transaccion (
+id_tipo_transaccion INT NOT NULL AUTO_INCREMENT,
+nombre_transaccion VARCHAR (100) NOT NULL,
+PRIMARY KEY (id_tipo_transaccion)
+);
+
+CREATE TABLE Clientes (
+id_cliente INT NOT NULL AUTO_INCREMENT,
+id_valoracion INT NOT NULL,
+nombre VARCHAR (50) NOT NULL,
+apellido  VARCHAR (50) NOT NULL,
+fecha_de_nacimiento DATE NOT NULL,
+tipo_documento VARCHAR(3) NOT NULL,
+documento VARCHAR(15)  NOT NULL,
+fecha_alta_cliente DATE NOT NULL,
+PRIMARY KEY (id_cliente),
+FOREIGN KEY (id_valoracion) REFERENCES Valoracion_Apertura (id_valoracion)
+);
+
+CREATE TABLE Comercio (
+id_comercio INT NOT NULL AUTO_INCREMENT,
+id_rubro INT NOT NULL,
+id_valoracion INT NOT NULL,
+nombre_comercio VARCHAR (50) NOT NULL,
+razon_social VARCHAR (50) NOT NULL,
+fecha_registro DATE NOT NULL,
+PRIMARY KEY (id_comercio),
+FOREIGN KEY (id_rubro) REFERENCES Rubro (id_rubro),
+FOREIGN KEY (id_valoracion) REFERENCES Valoracion_Apertura (id_valoracion)
+);
+
+CREATE TABLE Inicio_Sesion (
+id_mail INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+correo_electronico VARCHAR (100) NOT NULL,
+contraseña VARCHAR (30) NOT NULL,
+PRIMARY KEY (id_mail),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio)
+);
+
+CREATE TABLE Telefono (
+id_telefono INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+id_compañia INT NOT NULL,
+telefono VARCHAR (40) NOT NULL,
+PRIMARY KEY (id_telefono),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio),
+FOREIGN KEY (id_compañia) REFERENCES Compañia_Telefonia (id_compañia)
+);
+
+CREATE TABLE Direccion (
+id_direccion INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+id_codigo_postal INT NOT NULL,
+calle VARCHAR (50) NOT NULL,
+altura VARCHAR (20) NOT NULL,
+piso VARCHAR (10),
+departamento VARCHAR (20),
+PRIMARY KEY (id_direccion),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio),
+FOREIGN KEY (id_codigo_postal) REFERENCES Codigo_Postal (id_codigo_postal)
+);
+
+CREATE TABLE Cuentas_Vinculadas (
+id_cuenta INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+id_emisora_cuenta INT NOT NULL,
+numero_de_cuenta BIGINT NOT NULL,
+tipo_de_cuenta VARCHAR (50) NOT NULL,
+PRIMARY KEY (id_cuenta),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio),
+FOREIGN KEY (id_emisora_cuenta) REFERENCES Emisora_cuenta (id_emisora_cuenta)
+);
+
+CREATE TABLE CVU_Cliente (
+id_cvu INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+numero_cvu BIGINT NOT NULL,
+saldo DECIMAL (11,2) NOT NULL,
+PRIMARY KEY (id_cvu),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio)
+);
+
+CREATE TABLE Ciclo_Cliente (
+id_ciclo INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+fecha_alta DATE NOT NULL,
+fecha_baja DATE,
+estado VARCHAR(100) NOT NULL,
+PRIMARY KEY (id_ciclo),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio)
+);
+
+CREATE TABLE Promociones (
+id_promocion INT NOT NULL AUTO_INCREMENT,
+id_rubro INT NOT NULL,
+id_emisora_promocion INT NOT NULL,
+fecha_promocion DATE NOT NULL,
+impacto_porcentual VARCHAR (10) NOT NULL,
+descripcion_promocion VARCHAR(150) NOT NULL,
+PRIMARY KEY (id_promocion),
+FOREIGN KEY (id_rubro) REFERENCES Rubro (id_rubro),
+FOREIGN KEY (id_emisora_promocion) REFERENCES Emisora_Promocion (id_emisora_promocion)
+);
+
+CREATE TABLE Detalle_Debito (
+id_transaccion_d INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+id_rubro INT,
+fecha_debito DATETIME NOT NULL,
+monto DECIMAL (11,2) NOT NULL,
+PRIMARY KEY (id_transaccion_d),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio),
+FOREIGN KEY (id_rubro) REFERENCES Rubro (id_rubro)
+);
+
+CREATE TABLE Detalle_Credito (
+id_transaccion_c INT NOT NULL AUTO_INCREMENT,
+id_comercio INT,
+id_cliente INT,
+id_rubro INT,
+fecha_credito DATETIME NOT NULL,
+monto DECIMAL (11,2) NOT NULL,
+PRIMARY KEY (id_transaccion_c),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio),
+FOREIGN KEY (id_rubro) REFERENCES Rubro (id_rubro)
+);
+
+CREATE TABLE Transacciones (
+id_transaccion INT NOT NULL AUTO_INCREMENT,
+id_transaccion_d INT,
+id_transaccion_c INT,
+id_cvu INT,
+id_cuenta INT,
+id_tipo_transaccion INT NOT NULL,
+estado VARCHAR(10) NOT NULL,
+PRIMARY KEY (id_transaccion),
+FOREIGN KEY (id_transaccion_d) REFERENCES Detalle_Debito (id_transaccion_d),
+FOREIGN KEY (id_transaccion_c) REFERENCES Detalle_Credito (id_transaccion_c),
+FOREIGN KEY (id_cvu) REFERENCES CVU_Cliente (id_cvu),
+FOREIGN KEY (id_cuenta) REFERENCES Cuentas_Vinculadas (id_cuenta),
+FOREIGN KEY (id_tipo_transaccion) REFERENCES Tipo_Transaccion (id_tipo_transaccion)
+);
+
+CREATE TABLE Referidos (
+id_referido INT NOT NULL AUTO_INCREMENT,
+id_cliente INT NOT NULL,
+nombre VARCHAR (50) NOT NULL,
+apellido  VARCHAR (50) NOT NULL,
+PRIMARY KEY (id_referido),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente)
+);
+
+CREATE TABLE Tabla_Referido (
+id_tabla_referido INT NOT NULL AUTO_INCREMENT,
+id_cliente INT NOT NULL,
+id_referido INT NOT NULL,
+fecha_referencia DATE NOT NULL,
+estado VARCHAR(50) NOT NULL,
+PRIMARY KEY (id_tabla_referido),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_referido) REFERENCES Referidos (id_referido)
+);
+
+CREATE TABLE Bonificacion_Referido (
+id_bonificacion_ref INT NOT NULL AUTO_INCREMENT,
+id_cliente INT,
+id_comercio INT,
+fecha_inicio_bonificacion DATETIME NOT NULL,
+fecha_fin_bonificacion DATETIME NOT NULL,
+clientes_referidos INT NOT NULL,
+impacto_porcentual VARCHAR(10) NOT NULL,
+PRIMARY KEY (id_bonificacion_ref),
+FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+FOREIGN KEY (id_comercio) REFERENCES Comercio (id_comercio)
+);
+
+
+
+
+
+
+
+
