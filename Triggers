@@ -1,0 +1,98 @@
+USE BILLETERA_VIRTUAL
+
+-- Creacion de las cuatro tablas correspondientes
+
+CREATE TABLE Creacion_Cliente (
+id_creacion_cli INT NOT NULL AUTO_INCREMENT,
+id_cliente INT NOT NULL,
+fecha_alta_cliente DATE,
+hora_alta_cliente TIME,
+usuario_alta VARCHAR(50),
+PRIMARY KEY (id_creacion_cli)
+);
+
+CREATE TABLE Creacion_Comercio (
+id_creacion_co INT NOT NULL AUTO_INCREMENT,
+id_comercio INT NOT NULL,
+fecha_registro DATE,
+hora_alta_comercio TIME,
+usuario_alta VARCHAR(50),
+PRIMARY KEY (id_creacion_co)
+);
+
+CREATE TABLE Historial_Val_Cliente (
+id_actval_cli INT NOT NULL AUTO_INCREMENT,
+id_cliente INT NOT NULL,
+id_valoracion INT NOT NULL,
+id_nueva_valoracion INT,
+fecha_act_val DATE,
+hora_act_val TIME,
+usuario_act_val VARCHAR(50),
+PRIMARY KEY (id_actval_cli)
+);
+
+CREATE TABLE Historial_Val_Comercio (
+id_actval_co INT NOT NULL AUTO_INCREMENT,
+id_comercio INT NOT NULL,
+id_valoracion INT NOT NULL,
+id_nueva_valoracion INT,
+fecha_act_val DATE,
+hora_act_val TIME,
+usuario_act_val VARCHAR(50),
+PRIMARY KEY (id_actval_co)
+);
+
+-- Creacion de los Triggers
+-- Trigger correspondiente a la insercion de datos en la tabla Creacion Cliente al crear un cliente nuevo en la tabla Clientes
+
+DELIMITER $$
+CREATE TRIGGER ´TR_After_Nuevo_Cliente´
+AFTER INSERT ON Clientes
+FOR EACH ROW
+BEGIN
+INSERT INTO Creacion_Cliente (id_cliente, fecha_alta_cliente, hora_alta_cliente, usuario_alta)
+VALUES (NEW.id_cliente, NEW.fecha_alta_cliente, curtime(), session_user());
+END $$
+DELIMITER ;
+
+-- Trigger correspondiente a la insercion de datos en la tabla Creacion Comercio al crear un comercio nuevo en la tabla Comercio
+
+DELIMITER $$
+CREATE TRIGGER ´TR_After_Nuevo_Comercio´
+AFTER INSERT ON Comercio
+FOR EACH ROW
+BEGIN
+INSERT INTO Creacion_Comercio (id_comercio, fecha_registro, hora_alta_comercio, usuario_alta)
+VALUES (NEW.id_comercio, NEW.fecha_registro, curtime(), session_user());
+END $$
+DELIMITER ;
+
+-- Trigger correspondiente a la actualizacion de la valoracion y al detalle de la valoracion anterior y la nueva de cada Cliente en la tabla Historial_Val_Cliente
+
+DELIMITER $$
+CREATE TRIGGER TR_Before_Actval_Cliente
+BEFORE UPDATE ON Clientes
+FOR EACH ROW
+BEGIN
+-- Verifica si la valoración ha cambiado
+IF OLD.id_valoracion <> NEW.id_valoracion THEN
+INSERT INTO Historial_Val_Cliente (id_cliente, id_valoracion, id_nueva_valoracion, fecha_act_val, hora_act_val, usuario_act_val)
+VALUES (OLD.id_cliente, OLD.id_valoracion, NEW.id_valoracion, NOW(), CURTIME(), SESSION_USER());
+END IF;
+END $$
+DELIMITER ;
+
+-- Trigger correspondiente a la actualizacion de la valoracion y al detalle de la valoracion anterior y la nueva de cada Comercio en la tabla Historial_Val_Comercio
+
+DELIMITER $$
+CREATE TRIGGER TR_Before_Actval_Comercio
+BEFORE UPDATE ON Comercio
+FOR EACH ROW
+BEGIN
+-- Verifica si la valoración ha cambiado
+IF OLD.id_valoracion <> NEW.id_valoracion THEN
+INSERT INTO Historial_Val_Comercio (id_comercio, id_valoracion, id_nueva_valoracion, fecha_act_val, hora_act_val, usuario_act_val)
+VALUES (OLD.id_comercio, OLD.id_valoracion, NEW.id_valoracion, NOW(), CURTIME(), SESSION_USER());
+END IF;
+END $$
+DELIMITER ;
