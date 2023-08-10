@@ -1,0 +1,54 @@
+-- 01 Vista para ver la Cantidad de Clientes por Valoracion
+CREATE OR REPLACE VIEW VW_Valoraciones_Clientes AS
+SELECT v.descripcion_valoracion AS Valoracion, COUNT(c.id_cliente) AS Cantidad
+FROM valoracion_apertura as v
+JOIN Clientes c ON v.id_valoracion = c.id_valoracion
+GROUP BY v.descripcion_valoracion
+ORDER BY Cantidad DESC;
+
+-- 02 Vista para ver la Cantidad de Comercios por Valoracion
+CREATE OR REPLACE VIEW VW_Valoraciones_Comercios AS
+SELECT v.descripcion_valoracion AS Valoracion, COUNT(co.id_comercio) AS Cantidad
+FROM valoracion_apertura as v
+JOIN Comercio co ON v.id_valoracion = co.id_valoracion
+GROUP BY v.descripcion_valoracion
+ORDER BY Cantidad DESC;
+
+-- 03 Vista para ver la Rentabilidad por Rubro 
+CREATE OR REPLACE VIEW VW_Rentabilidad_Rubro AS
+SELECT r.nombre_rubro AS Rubro, SUM(detc.monto) AS Valor
+FROM Rubro r
+JOIN Detalle_Credito detc ON r.id_rubro = detc.id_rubro
+GROUP BY r.nombre_rubro
+ORDER BY Valor DESC;
+
+-- 04 Vista para ver la Cantidad de Clientes y Comercios por Partido
+CREATE OR REPLACE VIEW VW_Clientes_Comercios_Zona AS
+SELECT cp.partido AS 'Partido', COUNT(d.id_cliente) AS Cantidad_Clientes, COUNT(d.id_comercio) AS Cantidad_Comercios
+FROM Codigo_Postal cp
+JOIN Direccion d ON d.id_codigo_postal = cp.id_codigo_postal
+GROUP BY cp.partido
+ORDER BY cp.partido;
+
+-- 05 Vista para ver la Cantidad de Promociones por Rubro
+CREATE OR REPLACE VIEW VW_Promociones_Rubro AS
+SELECT r.nombre_rubro AS 'Rubro', COUNT(p.id_promocion) AS Cantidad_Promociones
+FROM Rubro r
+JOIN Promociones p ON r.id_rubro = p.id_rubro
+GROUP BY r.nombre_rubro
+ORDER BY Cantidad_Promociones DESC;
+
+
+Cantidad de debitos y creditos por zona (NO FUNCIONA)
+CREATE OR REPLACE VIEW VW_Debitos_Creditos_Zona AS
+SELECT cp.partido AS 'Zona', SUM(detd.monto) AS 'Debitos', SUM(detc.monto) AS 'Creditos'
+FROM Codigo_Postal cp
+JOIN Direccion d ON d.id_codigo_postal = cp.id_codigo_postal
+JOIN Detalle_Debito detd ON detd.id_cliente = d.id_cliente AND detd.id_comercio = d.id_comercio
+JOIN Detalle_Credito detc ON detc.id_comercio = d.id_comercio AND detc.id_cliente = d.id_cliente
+GROUP BY cp.partido
+ORDER BY cp.partido;
+
+
+
+
