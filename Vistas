@@ -37,18 +37,3 @@ FROM Rubro r
 JOIN Promociones p ON r.id_rubro = p.id_rubro
 GROUP BY r.nombre_rubro
 ORDER BY Cantidad_Promociones DESC;
-
-
-Cantidad de debitos y creditos por zona (NO FUNCIONA)
-CREATE OR REPLACE VIEW VW_Debitos_Creditos_Zona AS
-SELECT cp.partido AS 'Zona', SUM(detd.monto) AS 'Debitos', SUM(detc.monto) AS 'Creditos'
-FROM Codigo_Postal cp
-JOIN Direccion d ON d.id_codigo_postal = cp.id_codigo_postal
-JOIN Detalle_Debito detd ON detd.id_cliente = d.id_cliente AND detd.id_comercio = d.id_comercio
-JOIN Detalle_Credito detc ON detc.id_comercio = d.id_comercio AND detc.id_cliente = d.id_cliente
-GROUP BY cp.partido
-ORDER BY cp.partido;
-
-
-
-
