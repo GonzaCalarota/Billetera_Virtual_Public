@@ -1,7 +1,8 @@
 -- Ejemplo de flujo monetario con la inclusion de Coderhouse a la Billetera Virtual.
 -- Se estiman 35.000 alumnos (extraido de Coderhouse.com), en 12 meses a un valor promedio de $4500,50 mensuales.
 
-USE billetera_virtual
+USE billetera_virtual;
+
 DELIMITER $$
 CREATE FUNCTION Inclusion_Servicio_Coderhouse_BV (alumnos INT, meses INT, valor_promedio_mensual DECIMAL(11,2))
 RETURNS DECIMAL(33,2)
@@ -18,7 +19,8 @@ SELECT Inclusion_Servicio_Coderhouse_BV(35000, 12, 4500.50) AS Año_2024
 
 -- Ejemplo de aumento de proyeccion anual (objetivos) sobre la base de flujo economico del año 2023.
 
-USE billetera_virtual
+USE billetera_virtual;
+
 DELIMITER $$
 CREATE FUNCTION Flujo_Proyeccion_Anual (Incremento_Proyeccion DECIMAL(19,2))
 RETURNS DECIMAL(19,2)
