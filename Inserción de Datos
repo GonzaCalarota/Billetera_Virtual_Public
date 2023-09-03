@@ -57,7 +57,7 @@ INSERT INTO Rubro (id_rubro, nombre_rubro) VALUES
 (NULL, 'Servicios'),
 (NULL, 'Libreria'),
 (NULL, 'Maquinarias'),
-(NULL, 'Alimenticion'),
+(NULL, 'Alimentacion'),
 (NULL, 'Combustible'),
 (NULL, 'Educacion');
 
