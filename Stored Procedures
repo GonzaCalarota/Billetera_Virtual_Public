@@ -31,7 +31,7 @@ END$$
 
 DELIMITER ;
 
-CALL SP_Ordenamiento('Nombre', 'DESC');
+-- CALL SP_Ordenamiento('Nombre', 'DESC');
 
 -- SP NUMERO 2
 USE BILLETERA_VIRTUAL;
@@ -76,7 +76,7 @@ END$$
 
 DELIMITER ;
 
-call billetera_virtual.SP_Consumo_Registrado(2, 5, 430000);
+-- call billetera_virtual.SP_Consumo_Registrado(2, 5, 430000);
 
 -- SP NUMERO 3
 USE BILLETERA_VIRTUAL;
@@ -97,5 +97,5 @@ END $$
 
 DELIMITER ;
 
-call billetera_virtual.SP_Crear_Cliente('Juan', 'Almada', '1991-06-20', 'DNI', '33333333');
+-- call billetera_virtual.SP_Crear_Cliente('Juan', 'Almada', '1991-06-20', 'DNI', '33333333');
 
