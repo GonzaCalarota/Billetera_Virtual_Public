@@ -1,4 +1,4 @@
-USE BILLETERA_VIRTUAL
+USE BILLETERA_VIRTUAL;
 
 -- Creacion de las cuatro tablas correspondientes
 
