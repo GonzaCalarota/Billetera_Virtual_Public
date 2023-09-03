@@ -1,5 +1,5 @@
 -- SP NUMERO 1
-USE BILLETERA_VIRTUAL
+USE BILLETERA_VIRTUAL;
 DELIMITER $$
 
 CREATE PROCEDURE `SP_Ordenamiento` (IN Campo CHAR(20), IN Orden VARCHAR(4))
@@ -34,7 +34,7 @@ DELIMITER ;
 CALL SP_Ordenamiento('Nombre', 'DESC');
 
 -- SP NUMERO 2
-USE BILLETERA_VIRTUAL
+USE BILLETERA_VIRTUAL;
 DELIMITER $$
 
 CREATE PROCEDURE SP_Consumo_Registrado (IN ID_Cliente_OP INT, IN Rubro_Gasto INT, IN Nuevo_Consumo DECIMAL(11,2))
@@ -79,7 +79,7 @@ DELIMITER ;
 call billetera_virtual.SP_Consumo_Registrado(2, 5, 430000);
 
 -- SP NUMERO 3
-USE BILLETERA_VIRTUAL
+USE BILLETERA_VIRTUAL;
 DELIMITER $$
 
 CREATE PROCEDURE SP_Crear_Cliente (IN N_Nombre VARCHAR(50), IN N_Apellido VARCHAR(50), IN N_Fecha_de_Nacimiento DATE, IN N_Tipo_Documento VARCHAR(3), IN N_Documento VARCHAR(15))
