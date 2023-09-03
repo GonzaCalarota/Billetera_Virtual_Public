@@ -1,3 +1,5 @@
+USE BILLETERA_VIRTUAL;
+
 -- 01 Vista para ver la Cantidad de Clientes por Valoracion
 CREATE OR REPLACE VIEW VW_Valoraciones_Clientes AS
 SELECT v.descripcion_valoracion AS Valoracion, COUNT(c.id_cliente) AS Cantidad
